@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura de Coordenadas</title>
+    <script>
+        function obtenerCoordenadas() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(enviarCoordenadas, manejarError);
+            } else {
+                alert("La geolocalización no es compatible con este navegador.");
+            }
+        }
+
+        function enviarCoordenadas(position) {
+            var latitud = position.coords.latitude;
+            var longitud = position.coords.longitude;
+
+            var scriptURL = 'https://script.google.com/macros/s/AKfycbxEzxX2sborYVzbDwLvxwVEoOAPN82B8HG1u_bhUD7dfcc7nZ39qrqlrlp69Ho1Qi5Gyg/exec';
+
+            fetch(scriptURL + '?latitud=' + latitud + '&longitud=' + longitud)
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                    // Redirige al formulario de Google
+                    window.location.href = 'https://docs.google.com/forms/d/e/1FAIpQLScU7sX6lB_IEo5poYtji3xpGL91vaTNxfN0us_wVsWPbRJ_lg/viewform';
+                })
+                .catch(error => {
+                    console.error('Error al enviar las coordenadas:', error);
+                });
+        }
+
+        function manejarError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("Se denegó la solicitud de geolocalización.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("La ubicación no está disponible.");
+                    break;
+                case error.TIMEOUT:
+                    alert("La solicitud de geolocalización ha expirado.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("Ha ocurrido un error desconocido.");
+                    break;
+            }
+        }
+    </script>
+</head>
+<body onload="obtenerCoordenadas()">
+    <h1>Capturando Coordenadas...</h1>
+    <p>Por favor, espera mientras se capturan tus coordenadas.</p>
+</body>
+</html>
